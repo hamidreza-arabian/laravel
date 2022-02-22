@@ -26,10 +26,16 @@ Route::get('posts/{data}', function ($data) {
 //    return view('posts',['post'=>"amo posts"]);
 })->where('data','[A-z]+');
 Route::get('/',function (){
-    dd(request()->is('/'));
+    $post = Post::latest();
+    if (request('search')){
+        $post
+            ->where('title','like','%' . request('search') . '%')
+            ->orwhere('description','like','%' . request('search') . '%');
+
+    }
     return view("posts",
         [
-            'posts' => Post::latest()->get(),
+            'posts' =>$post->get(),
             'categories'=>Category::all()
         ]);
 });
