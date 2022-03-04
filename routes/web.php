@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Models\post;
@@ -25,43 +28,31 @@ Route::get('posts/{data}', function ($data) {
     return redirect('hamid');
 //    return view('posts',['post'=>"amo posts"]);
 })->where('data','[A-z]+');
-Route::get('/',function (){
-    $post = Post::latest();
-    if (request('search')){
-        $post
-            ->where('title','like','%' . request('search') . '%')
-            ->orwhere('description','like','%' . request('search') . '%');
-
-    }
-    return view("posts",
-        [
-            'posts' =>$post->get(),
-            'categories'=>Category::all()
-        ]);
-});
-Route::get('posts/{post:slug}',function (Post $post){
-    return view('test_data',[
-        'post'=>$post,
-        'categories'=>Category::all()
-
-    ]) ;
-});
+Route::get('/',[PostController::class , 'index']);
+Route::get('posts/{post:slug}',[PostController::class , 'show']);
 Route::get('category/{category:name}',function (Category $category){
     return view('posts',[
         'posts'=>$category->post,
-        'CurrentCategory'=> $category,
-        'categories'=>Category::all()
+
 
     ]) ;
 });
-Route::get('get_url_data',function (){
-   echo "dflgsdf";
-});
-
-
 Route::get('users/{user}',function (User $user){
     return view('posts',[
             'posts'=>$user->posts
         ]
     );
 });
+Route::get('get_url_data',function (){
+   echo "dflgsdf";
+});
+Route::get('register',[RegisterController::class,'create'])->middleware('guest');
+Route::post('register',[RegisterController::class,'store'])->middleware('guest');
+
+Route::post('logout',[SessionController::class , 'destroy'])->middleware('auth');
+
+Route::get('login',[SessionController::class , 'create'])->middleware('guest');
+Route::post('login',[SessionController::class , 'store'])->middleware('guest');
+
+
+

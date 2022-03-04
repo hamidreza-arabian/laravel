@@ -8,6 +8,12 @@
 
 
 <body style="font-family: Open Sans, sans-serif">
+@if(session()->has('success'))
+    <p x-data="{ show : true}"
+       x-init="setTimeout(()=> show =false, 4000)"
+       x-show="show"
+    >{{ session('success') }}</p>
+@endif
 <section class="px-6 py-8">
     <nav class="md:flex md:justify-between md:items-center">
         <div>
@@ -16,8 +22,17 @@
             </a>
         </div>
 
-        <div class="mt-8 md:mt-0">
-            <a href="/" class="text-xs font-bold uppercase">Home Page</a>
+        <div class="mt-8 md:mt-0 flex items-center">
+            @auth
+                <span> welcome {{ auth()->user()->user_name }}</span>
+                <form class="ml-5" action="/logout" method="post">
+                    @csrf
+                    <button type="submit" class="text-blue-200"> log out</button>
+                </form>
+            @else
+                <a href="/login" class="text-xs mr-5 font-bold uppercase">log in!</a>
+                <a href="/register" class="text-xs font-bold uppercase">register</a>
+            @endauth
 
             <a href="#" class="bg-blue-500 ml-3 rounded-full text-xs font-semibold text-white uppercase py-3 px-5">
                 Subscribe for Updates
